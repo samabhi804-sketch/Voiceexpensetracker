@@ -1,2 +1,0 @@
-# Voiceexpensetracker
-Voice expense tracker
