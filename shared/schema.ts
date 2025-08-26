@@ -69,7 +69,7 @@ export const insertBudgetSchema = createInsertSchema(budgets).omit({
   updatedAt: true,
 });
 
-export const updateExpenseSchema = insertExpenseSchema.partial();
+export const updateExpenseSchema = insertExpenseSchema.omit({ userId: true }).partial();
 export const updateBudgetSchema = insertBudgetSchema.partial();
 
 // Types
