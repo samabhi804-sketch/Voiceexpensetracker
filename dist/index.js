@@ -224,7 +224,7 @@ import passport from "passport";
 import session from "express-session";
 import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
-if (!process.env.REPLIT_DOMAINS) {
+if (!process.env.REPLIT_DOMAINS && process.env.AUTH_DISABLED !== "true") {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
 }
 var getOidcConfig = memoize(
@@ -274,6 +274,9 @@ async function upsertUser(claims) {
 }
 async function setupAuth(app2) {
   app2.set("trust proxy", 1);
+  if (process.env.AUTH_DISABLED === "true") {
+    return;
+  }
   app2.use(getSession());
   app2.use(passport.initialize());
   app2.use(passport.session());
@@ -322,6 +325,9 @@ async function setupAuth(app2) {
   });
 }
 var isAuthenticated = async (req, res, next) => {
+  if (process.env.AUTH_DISABLED === "true") {
+    return next();
+  }
   const user = req.user;
   if (!req.isAuthenticated() || !user.expires_at) {
     return res.status(401).json({ message: "Unauthorized" });

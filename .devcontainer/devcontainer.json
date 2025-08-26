@@ -1,0 +1,38 @@
+{
+	"name": "VoiceExpenseTracker Dev",
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+	"features": {
+		"ghcr.io/devcontainers/features/postgres:1": {
+			"version": "16",
+			"postgresql.conf": {},
+			"initdb": true
+		}
+	},
+	"forwardPorts": [5000],
+	"portsAttributes": {
+		"5000": { "label": "Web App", "onAutoForward": "openBrowser" }
+	},
+	"containerEnv": {
+		"NODE_ENV": "development",
+		"PORT": "5000",
+		"AUTH_DISABLED": "true",
+		"SESSION_SECRET": "dev-secret",
+		"DATABASE_URL": "postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable",
+		"REPLIT_DOMAINS": "localhost",
+		"ISSUER_URL": "https://replit.com/oidc",
+		"REPL_ID": "dummy"
+	},
+	"postCreateCommand": "npm ci",
+	"postStartCommand": "npm run db:push",
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"files.insertFinalNewline": true
+			},
+			"extensions": [
+				"esbenp.prettier-vscode",
+				"dbaeumer.vscode-eslint"
+			]
+		}
+	}
+}

@@ -8,7 +8,7 @@ import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 
-if (!process.env.REPLIT_DOMAINS) {
+if (!process.env.REPLIT_DOMAINS && process.env.AUTH_DISABLED !== 'true') {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
 }
 
@@ -68,6 +68,11 @@ async function upsertUser(
 
 export async function setupAuth(app: Express) {
   app.set("trust proxy", 1);
+
+  if (process.env.AUTH_DISABLED === 'true') {
+    return; // Skip auth setup in dev/codespaces
+  }
+
   app.use(getSession());
   app.use(passport.initialize());
   app.use(passport.session());
@@ -128,6 +133,9 @@ export async function setupAuth(app: Express) {
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
+  if (process.env.AUTH_DISABLED === 'true') {
+    return next();
+  }
   const user = req.user as any;
 
   if (!req.isAuthenticated() || !user.expires_at) {
