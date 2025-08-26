@@ -85,17 +85,27 @@ var updateExpenseSchema = insertExpenseSchema.omit({ userId: true }).partial();
 var updateBudgetSchema = insertBudgetSchema.partial();
 
 // server/db.ts
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-serverless";
+import { Pool as PgPool } from "pg";
+import { drizzle as drizzlePg } from "drizzle-orm/node-postgres";
+import { Pool as NeonPool, neonConfig } from "@neondatabase/serverless";
+import { drizzle as drizzleNeon } from "drizzle-orm/neon-serverless";
 import ws from "ws";
-neonConfig.webSocketConstructor = ws;
 if (!process.env.DATABASE_URL) {
   throw new Error(
     "DATABASE_URL must be set. Did you forget to provision a database?"
   );
 }
-var pool = new Pool({ connectionString: process.env.DATABASE_URL });
-var db = drizzle({ client: pool, schema: schema_exports });
+var isNeon = /neon|neondb|neon\.tech/i.test(process.env.DATABASE_URL);
+var db;
+var pool;
+if (isNeon) {
+  neonConfig.webSocketConstructor = ws;
+  pool = new NeonPool({ connectionString: process.env.DATABASE_URL });
+  db = drizzleNeon({ client: pool, schema: schema_exports });
+} else {
+  pool = new PgPool({ connectionString: process.env.DATABASE_URL });
+  db = drizzlePg(pool, { schema: schema_exports });
+}
 
 // server/storage.ts
 import { eq, and, gte, lte, desc } from "drizzle-orm";
