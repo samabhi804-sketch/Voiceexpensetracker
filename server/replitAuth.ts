@@ -134,6 +134,7 @@ export async function setupAuth(app: Express) {
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   if (process.env.AUTH_DISABLED === 'true') {
+    (req as any).user = { claims: { sub: 'dev-user' } };
     return next();
   }
   const user = req.user as any;
