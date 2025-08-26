@@ -60,7 +60,7 @@ export default function ExpenseForm({ onClose, onSuccess, initialData, expenseId
   const saveExpenseMutation = useMutation({
     mutationFn: async (data: ExpenseFormData) => {
       const expenseData = {
-        amount: parseFloat(data.amount),
+        amount: data.amount,
         category: data.category,
         description: data.description,
         date: new Date(data.date).toISOString(),

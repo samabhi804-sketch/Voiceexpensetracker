@@ -20,6 +20,7 @@ export default function ExpenseList({ expenses, isLoading, onExpenseUpdate }: Ex
   const queryClient = useQueryClient();
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deletingExpenseId, setDeletingExpenseId] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
 
   const deleteExpenseMutation = useMutation({
     mutationFn: async (expenseId: string) => {
@@ -165,7 +166,7 @@ export default function ExpenseList({ expenses, isLoading, onExpenseUpdate }: Ex
             <Button 
               variant="outline"
               className="w-full border-dashed border-2 hover:border-primary hover:text-primary"
-              onClick={() => {/* Show manual expense form */}}
+              onClick={() => setIsCreating(true)}
               data-testid="button-add-manual-expense"
             >
               <i className="fas fa-plus mr-2"></i>Add Manual Expense
@@ -175,6 +176,16 @@ export default function ExpenseList({ expenses, isLoading, onExpenseUpdate }: Ex
       </Card>
 
       {/* Edit Expense Form */}
+      {isCreating && (
+        <ExpenseForm
+          onClose={() => setIsCreating(false)}
+          onSuccess={() => {
+            setIsCreating(false);
+            onExpenseUpdate();
+          }}
+        />
+      )}
+
       {editingExpense && (
         <ExpenseForm
           onClose={() => setEditingExpense(null)}
