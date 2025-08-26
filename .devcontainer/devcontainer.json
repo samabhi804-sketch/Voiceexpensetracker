@@ -1,13 +1,6 @@
 {
 	"name": "VoiceExpenseTracker Dev",
 	"image": "mcr.microsoft.com/devcontainers/typescript-node:20",
-	"features": {
-		"ghcr.io/devcontainers/features/postgres:1": {
-			"version": "16",
-			"postgresql.conf": {},
-			"initdb": true
-		}
-	},
 	"forwardPorts": [5000],
 	"portsAttributes": {
 		"5000": { "label": "Web App", "onAutoForward": "openBrowser" }
@@ -22,8 +15,8 @@
 		"ISSUER_URL": "https://replit.com/oidc",
 		"REPL_ID": "dummy"
 	},
-	"postCreateCommand": "npm ci",
-	"postStartCommand": "npm run db:push",
+	"postCreateCommand": "sudo apt-get update && sudo apt-get install -y postgresql postgresql-contrib ca-certificates curl && npm ci",
+	"postStartCommand": "sudo service postgresql start && sudo -u postgres psql -c \"ALTER USER postgres WITH PASSWORD 'postgres';\" && npm run db:push",
 	"customizations": {
 		"vscode": {
 			"settings": {
